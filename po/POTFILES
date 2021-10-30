@@ -1,0 +1,3 @@
+src/Application.vala
+data/gtk3-minesweeper.desktop.in
+data/gtk3-minesweeper.appdata.xml.in

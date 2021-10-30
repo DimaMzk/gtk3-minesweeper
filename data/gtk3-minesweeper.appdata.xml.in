@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2021 Dimitry Maizik <dima@dmaizik.ca> -->
+<component type="desktop">
+  <id>com.github.dimamzk.gtk3-minesweeper</id>
+  <metadata_license>CC0</metadata_license>
+  <name>Mines</name>
+  <summary>Read the numbers, avoid the bombs.</summary>
+  <description>
+    <p>A quick summary of your app's main selling points and features. Just a couple sentences per paragraph is best.</p>
+  </description>
+</component>

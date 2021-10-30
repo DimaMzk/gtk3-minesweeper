@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Mines
+GenericName=Mines
+Comment=Yet another minesweeper game
+Categories=LogicGame;Game;
+Exec=com.github.dimamzk.gtk3-minesweeper
+Icon=com.github.dimamzk.gtk3-minesweeper
+Terminal=false
+Type=Application
+Keywords=Hello;World;Example;
