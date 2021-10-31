@@ -14,43 +14,42 @@
 
     protected override void activate () {
       var main_window = new Gtk.ApplicationWindow (this) {
-        default_height = 300,
-        default_width = 300,
-        title = _("Hello World!")
+        default_height = 500,
+        default_width = 500,
+        /// TRANSLATORS: Main Top Bar Title
+        title = _("Mines")
       };
 
-      var hello_button = new Gtk.Button.with_label(("Say Hello"));
-      var hello_label = new Gtk.Label(null);
+      // CONSTANTS TO DETERMINE GAME RULES
+      // TODO: These need to be user speciafiable
+      const int BOARD_HEIGHT       = 10;
+      const int BOARD_WIDTH        = 10;
+      const int MINES              = 25;
+      const bool CORNERS_HAVE_MINES = true;
 
-      var rotate_button = new Gtk.Button.with_label(_("Rotate"));
-      var rotate_label = new Gtk.Label(_("Horizontal"));
+      // we want grid of button BOARD_HEIGHT tall, BOARD_WIDTH wide
 
-      var grid = new Gtk.Grid() {
+      var mine_board = new Gtk.Grid () {
         column_spacing = 6,
         row_spacing = 6
       };
 
-      // Add First row of Widgets
-      grid.attach(hello_button, 0, 0, 1, 1);
-      grid.attach_next_to(hello_label, hello_button, Gtk.PositionType.RIGHT, 1, 1);
+      var buttons = new Gtk.Button[BOARD_WIDTH, BOARD_HEIGHT];
+      var label = new Gtk.Label("A Label");
+      mine_board.attach(label, 0, BOARD_HEIGHT, BOARD_WIDTH);
+      for (int i = 0; i < BOARD_WIDTH; i++){
+        for (int j = 0; j < BOARD_HEIGHT; j++){
+          buttons[i, j] = new Gtk.Button.with_label(j.to_string() + " - " + i.to_string());
+          var curr_col = i.to_string();
+          var curr_row = j.to_string();
+          buttons[i, j].clicked.connect(() => {
+            label.label = (curr_row + " - " + curr_col);
+          });
+          mine_board.attach(buttons[i, j], i, j);
+        }
+      }
 
-      // Add second row of widgets
-      grid.attach(rotate_button, 0, 1);
-      grid.attach_next_to(rotate_label, rotate_button, Gtk.PositionType.RIGHT, 1, 1);
-
-      hello_button.clicked.connect (() => {
-        hello_label.label = _("Hello World!");
-        hello_button.sensitive = false;
-      });
-
-      rotate_button.clicked.connect (() => {
-        rotate_label.angle = 90;
-        rotate_label.label = _("Vertical");
-        rotate_button.sensitive = false;
-      });
-
-      main_window.add(grid);
-
+      main_window.add(mine_board);
       main_window.show_all();
     }
 
