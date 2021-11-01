@@ -12,6 +12,53 @@
       );
     }
 
+    protected bool[,] generate_board(int height, int width, int mine_count, int[] context_coord, bool mines_on_corners) {
+      // TODO: We should not continue if we want -1 mines, or height*width mines or more
+      var mines_left_to_generate = mine_count;
+      var mine_coords = new bool[width, height];
+      for (int i = 0; i < width; i++){
+        for (int j = 0; j < height; j++){
+          mine_coords[i, j] = false; // just in case :)
+        }
+      }
+      while (mines_left_to_generate > 0) {
+        var col = GLib.Random.int_range(0, width);
+        var row = GLib.Random.int_range(0, height);
+        if (!mine_coords[col, row]){
+          var mine = true;
+          if(!mines_on_corners){
+            if((col == 0 && row == 0) ||
+               (col == 0 && row == height) ||
+               (col == width && row == 0) ||
+               (col == width && row == height)) {
+                  mine = false;
+                }
+          }
+          if (col == context_coord[0] && row == context_coord[1]){
+            mine = false;
+          }
+          if (mine){
+            mine_coords[col, row] = true;
+            mines_left_to_generate--;
+          }
+        }
+      }
+      return mine_coords;
+    }
+
+    protected bool[,] init_game(Gtk.Button[,] button_arr, int height, int width, int mine_count, int[] context_coord, bool mines_on_corners) {
+      var mine_coords = generate_board(height, width, mine_count, context_coord, mines_on_corners);
+      for (int i = 0; i < width; i++) {
+        for (int j = 0; j < height; j++) {
+          button_arr[i, j].set_label("  "); // Empty the board as we go // TODO: This wont be needed when finished
+          if (mine_coords[i, j]){
+            button_arr[i, j].set_label(" *");
+          }
+        }
+      }
+      return mine_coords;
+    }
+
     protected override void activate () {
       var main_window = new Gtk.ApplicationWindow (this) {
         default_height = 500,
@@ -37,19 +84,6 @@
 
       var mines_left_to_generate = 25;
       var mine_coords = new bool[BOARD_WIDTH, BOARD_HEIGHT];
-      for (int i = 0; i < BOARD_WIDTH; i++){
-        for (int j = 0; j < BOARD_HEIGHT; j++){
-          mine_coords[i, j] = false; // just in case :)
-        }
-      }
-      while (mines_left_to_generate > 0) {
-        var col = GLib.Random.int_range(0, (BOARD_WIDTH - 1));
-        var row = GLib.Random.int_range(0, (BOARD_HEIGHT - 1));
-        if (!mine_coords[col, row]){
-          mine_coords[col, row] = true;
-          mines_left_to_generate--;
-        }
-      }
 
 
       var buttons = new Gtk.Button[BOARD_WIDTH, BOARD_HEIGHT];
@@ -57,22 +91,13 @@
       mine_board.attach(label, 0, BOARD_HEIGHT, BOARD_WIDTH);
       for (int i = 0; i < BOARD_WIDTH; i++){
         for (int j = 0; j < BOARD_HEIGHT; j++){
-          if(mine_coords[i, j]){
-            buttons[i, j] = new Gtk.Button.with_label(j.to_string() + " -- " + i.to_string());
-          } else {
-            buttons[i, j] = new Gtk.Button.with_label(j.to_string() + " - " + i.to_string());
-          }
+          buttons[i, j] = new Gtk.Button.with_label("   ");
           var curr_col = i.to_string();
           var curr_row = j.to_string();
-          if(mine_coords[i, j]) {
-            buttons[i, j].clicked.connect(() => {
-              label.label = (curr_row + " - BOOM - " + curr_col);
-            });
-          } else {
-            buttons[i, j].clicked.connect(() => {
-              label.label = (curr_row + " - " + curr_col);
-            });
-          }
+          int[] coords = {i, j};
+          buttons[i, j].clicked.connect(() => {
+            mine_coords = init_game(buttons, 10, 10, 25, coords, false);
+          });
           mine_board.attach(buttons[i, j], i, j);
         }
       }
