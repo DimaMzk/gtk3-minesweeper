@@ -58,6 +58,14 @@
       }
       return mine_coords;
     }
+    
+    protected void clear_board(Gtk.Button[,] button_arr, int height, int width) {
+      for (int i = 0; i < width; i++) {
+        for (int j = 0; j < height; j++) {
+          button_arr[i, j].set_label("  "); // Empty the board as we go // TODO: This wont be needed when finished
+        }
+      }
+    }
 
     protected override void activate () {
       var main_window = new Gtk.ApplicationWindow (this) {
@@ -88,7 +96,12 @@
 
       var buttons = new Gtk.Button[BOARD_WIDTH, BOARD_HEIGHT];
       var label = new Gtk.Label("A Label");
+      var start_game_button = new Gtk.Button.with_label ("Start New Game");
+      start_game_button.clicked.connect(() => {
+          clear_board(buttons, 10, 10);
+      });
       mine_board.attach(label, 0, BOARD_HEIGHT, BOARD_WIDTH);
+      mine_board.attach(start_game_button, 0, BOARD_HEIGHT + 1, BOARD_WIDTH);
       for (int i = 0; i < BOARD_WIDTH; i++){
         for (int j = 0; j < BOARD_HEIGHT; j++){
           buttons[i, j] = new Gtk.Button.with_label("   ");
